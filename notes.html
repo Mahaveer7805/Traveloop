@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+        <div>
+            <h1 class="page-title">{{ trip.name }}</h1>
+        </div>
+    </div>
+    
+    <!-- Trip Sub-navigation -->
+    <div class="trip-subnav">
+        <a href="{{ url_for('itinerary_view', trip_id=trip.id) }}">Itinerary</a>
+        <a href="{{ url_for('bookings', trip_id=trip.id) }}">Bookings</a>
+        <a href="{{ url_for('funds', trip_id=trip.id) }}">Funds</a>
+        <a href="{{ url_for('budget', trip_id=trip.id) }}">Budget</a>
+        <a href="{{ url_for('checklist', trip_id=trip.id) }}">Checklist</a>
+        <a href="{{ url_for('reviews', trip_id=trip.id) }}">Reviews</a>
+        <a href="{{ url_for('notes', trip_id=trip.id) }}" class="active">Notes</a>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr 2fr;">
+    <!-- Add Note -->
+    <div class="card" style="height: fit-content;">
+        <h3>New Note</h3>
+        <form method="POST" action="{{ url_for('notes', trip_id=trip.id) }}" style="margin-top: 1rem;">
+            <div class="form-group">
+                <textarea name="content" class="form-control" rows="6" required placeholder="Jot down reservations, ideas, local contacts..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Note</button>
+        </form>
+    </div>
+
+    <!-- Notes List -->
+    <div>
+        <h3 style="margin-bottom: 1.5rem;">Trip Notes</h3>
+        {% if trip.notes %}
+            <div class="grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                {% for note in trip.notes|sort(attribute='created_at', reverse=True) %}
+                    <div class="card" style="background: #fffbf0; border-left: 4px solid #fcd34d;">
+                        <p style="white-space: pre-wrap; margin-bottom: 1rem;">{{ note.content }}</p>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); text-align: right;">
+                            {{ note.created_at.strftime('%b %d, %Y %I:%M %p') }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <p style="color: var(--text-secondary); margin: 0;">No notes added yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

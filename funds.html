@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 2rem; margin-bottom: 2rem;">
+    <h1 class="page-title">{{ trip.name }}</h1>
+    
+    <div class="trip-subnav">
+        <a href="{{ url_for('itinerary_view', trip_id=trip.id) }}">Itinerary</a>
+        <a href="{{ url_for('bookings', trip_id=trip.id) }}">Bookings</a>
+        <a href="{{ url_for('funds', trip_id=trip.id) }}" class="active">Funds</a>
+        <a href="{{ url_for('budget', trip_id=trip.id) }}">Budget</a>
+        <a href="{{ url_for('checklist', trip_id=trip.id) }}">Checklist</a>
+        <a href="{{ url_for('reviews', trip_id=trip.id) }}">Reviews</a>
+        <a href="{{ url_for('notes', trip_id=trip.id) }}">Notes</a>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr 2fr;">
+    <!-- Add Expense -->
+    <div class="card" style="height: fit-content; background: linear-gradient(135deg, #fdf4ff, #f0fdf4);">
+        <h3>Log Expense (Funds)</h3>
+        <form method="POST" action="{{ url_for('funds', trip_id=trip.id) }}" style="margin-top: 1rem;">
+            <div class="form-group">
+                <label class="form-label" for="title">Expense Title</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Group Dinner">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="amount">Amount ($)</label>
+                <input type="number" name="amount" class="form-control" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="paid_by">Paid By</label>
+                <input type="text" name="paid_by" class="form-control" value="{{ current_user.name }}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="split_with">Split With</label>
+                <input type="text" name="split_with" class="form-control" placeholder="Names (comma separated)">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; background: var(--success-color);">Log Expense</button>
+        </form>
+    </div>
+
+    <!-- Expenses List -->
+    <div>
+        <h3 style="margin-bottom: 1.5rem;">Trip Funds Tracker</h3>
+        {% if trip.expenses %}
+            <div class="grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                {% for e in trip.expenses %}
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--success-color);">
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.1rem;">{{ e.title }}</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0; margin-top: 0.25rem;">
+                                Paid by: <strong>{{ e.paid_by }}</strong>
+                                {% if e.split_with %} | Split with: {{ e.split_with }}{% endif %}
+                            </p>
+                        </div>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: var(--success-color);">
+                            ${{ "%.2f"|format(e.amount) }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <p style="color: var(--text-secondary); margin: 0;">No shared funds or expenses logged yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

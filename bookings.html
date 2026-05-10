@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 2rem; margin-bottom: 2rem;">
+    <h1 class="page-title">{{ trip.name }}</h1>
+    
+    <div class="trip-subnav">
+        <a href="{{ url_for('itinerary_view', trip_id=trip.id) }}">Itinerary</a>
+        <a href="{{ url_for('bookings', trip_id=trip.id) }}" class="active">Bookings</a>
+        <a href="{{ url_for('funds', trip_id=trip.id) }}">Funds</a>
+        <a href="{{ url_for('budget', trip_id=trip.id) }}">Budget</a>
+        <a href="{{ url_for('checklist', trip_id=trip.id) }}">Checklist</a>
+        <a href="{{ url_for('reviews', trip_id=trip.id) }}">Reviews</a>
+        <a href="{{ url_for('notes', trip_id=trip.id) }}">Notes</a>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr 2fr;">
+    <!-- Add Booking -->
+    <div class="card" style="height: fit-content;">
+        <h3>Add Booking</h3>
+        <form method="POST" action="{{ url_for('bookings', trip_id=trip.id) }}" style="margin-top: 1rem;">
+            <div class="form-group">
+                <label class="form-label" for="booking_type">Type</label>
+                <select name="booking_type" class="form-control" required>
+                    <option value="Flight">Flight</option>
+                    <option value="Hotel">Hotel</option>
+                    <option value="Train">Train</option>
+                    <option value="Car Rental">Car Rental</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="provider">Provider (Airline/Hotel)</label>
+                <input type="text" name="provider" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="confirmation_number">Confirmation #</label>
+                <input type="text" name="confirmation_number" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="date">Date</label>
+                <input type="date" name="date" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Booking</button>
+        </form>
+    </div>
+
+    <!-- Bookings List -->
+    <div>
+        <h3 style="margin-bottom: 1.5rem;">Your Reservations</h3>
+        {% if trip.bookings %}
+            <div class="grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                {% for b in trip.bookings|sort(attribute='date') %}
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent-color);">
+                        <div>
+                            <div style="margin-bottom: 0.25rem;">
+                                <span class="badge badge-info">{{ b.booking_type }}</span>
+                                <span style="font-weight: 600; margin-left: 0.5rem;">{{ b.provider }}</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                                {% if b.date %}Date: {{ b.date.strftime('%b %d, %Y') }} • {% endif %}
+                                Conf #: <strong>{{ b.confirmation_number or 'N/A' }}</strong>
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <p style="color: var(--text-secondary); margin: 0;">No bookings added yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

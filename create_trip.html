@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 3rem auto;">
+    <h1 class="page-title">Plan a New Trip</h1>
+    <p class="page-subtitle">Let's get the details down before we start building the itinerary.</p>
+
+    <form method="POST" action="{{ url_for('create_trip') }}">
+        <div class="form-group">
+            <label class="form-label" for="name">Trip Name</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="e.g. Euro Trip 2026">
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+                <label class="form-label" for="start_date">Start Date</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" required>
+            </div>
+            
+            <div class="form-group" style="flex: 1;">
+                <label class="form-label" for="end_date">End Date</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="description">Trip Description (Optional)</label>
+            <textarea id="description" name="description" class="form-control" rows="4" placeholder="What's the vibe of this trip?"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create Trip & Start Planning</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
+        <div>
+            <a href="{{ url_for('dashboard') }}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">&larr; Back to Dashboard</a>
+            <h1 class="page-title" style="margin-top: 0.5rem;">{{ trip.name }}</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">
+                {{ trip.start_date.strftime('%b %d, %Y') }} - {{ trip.end_date.strftime('%b %d, %Y') }}
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('itinerary_view', trip_id=trip.id) }}" class="btn btn-primary">View Full Itinerary</a>
+        </div>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr 2fr;">
+    <!-- Add Stop Form -->
+    <div class="card" style="height: fit-content;">
+        <h3>Add a Stop</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">Add cities to build your route.</p>
+        
+        <form method="POST" action="{{ url_for('itinerary_builder', trip_id=trip.id) }}">
+            <div class="form-group">
+                <label class="form-label" for="city">City / Destination</label>
+                <input type="text" id="city" name="city" class="form-control" required placeholder="e.g. Paris">
+                <small><a href="{{ url_for('city_search') }}" style="color: var(--accent-color); text-decoration: none; font-size: 0.8rem;">Need inspiration? Search cities</a></small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="start_date">Arrival Date</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="end_date">Departure Date</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn btn-secondary" style="width: 100%;">Add Stop</button>
+        </form>
+    </div>
+
+    <!-- Stops List -->
+    <div>
+        <h3 style="margin-bottom: 1rem;">Your Route</h3>
+        {% if trip.stops %}
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for stop in trip.stops|sort(attribute='start_date') %}
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem;">
+                        <div>
+                            <h4 style="font-size: 1.2rem; margin-bottom: 0.25rem;">{{ stop.city }}</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                                {{ stop.start_date.strftime('%b %d') }} - {{ stop.end_date.strftime('%b %d') }} 
+                                ({{ (stop.end_date - stop.start_date).days }} nights)
+                            </p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('activity_search', trip_id=trip.id, stop_id=stop.id) }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">+ Add Activities</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem 2rem;">
+                <p style="color: var(--text-secondary); margin: 0;">No stops added yet. Add your first destination to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

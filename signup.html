@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 4rem auto; text-align: center;">
+    <h1 class="page-title">Join Traveloop</h1>
+    <p class="page-subtitle">Start planning your dream trip today</p>
+
+    <form method="POST" action="{{ url_for('signup') }}">
+        <div class="form-group" style="text-align: left;">
+            <label class="form-label" for="name">Full Name</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Jane Doe">
+        </div>
+
+        <div class="form-group" style="text-align: left;">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required placeholder="name@example.com">
+        </div>
+        
+        <div class="form-group" style="text-align: left;">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign Up</button>
+    </form>
+    
+    <p style="margin-top: 2rem; color: var(--text-secondary);">
+        Already have an account? <a href="{{ url_for('login') }}" style="color: var(--accent-color); text-decoration: none;">Login</a>
+    </p>
+</div>
+{% endblock %}

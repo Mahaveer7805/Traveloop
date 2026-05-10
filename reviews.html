@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 2rem; margin-bottom: 2rem;">
+    <h1 class="page-title">{{ trip.name }}</h1>
+    
+    <div class="trip-subnav">
+        <a href="{{ url_for('itinerary_view', trip_id=trip.id) }}">Itinerary</a>
+        <a href="{{ url_for('bookings', trip_id=trip.id) }}">Bookings</a>
+        <a href="{{ url_for('funds', trip_id=trip.id) }}">Funds</a>
+        <a href="{{ url_for('budget', trip_id=trip.id) }}">Budget</a>
+        <a href="{{ url_for('checklist', trip_id=trip.id) }}">Checklist</a>
+        <a href="{{ url_for('reviews', trip_id=trip.id) }}" class="active">Reviews</a>
+        <a href="{{ url_for('notes', trip_id=trip.id) }}">Notes</a>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr 2fr;">
+    <!-- Add Review -->
+    <div class="card" style="height: fit-content; background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+        <h3>Write a Review/Memory</h3>
+        <form method="POST" action="{{ url_for('reviews', trip_id=trip.id) }}" style="margin-top: 1rem;">
+            <div class="form-group">
+                <label class="form-label" for="title">Title</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Amazing Dinner at Eiffel Tower">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="rating">Rating (1-5)</label>
+                <select name="rating" class="form-control">
+                    <option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ 4 - Very Good</option>
+                    <option value="3">⭐⭐⭐ 3 - Good</option>
+                    <option value="2">⭐⭐ 2 - Fair</option>
+                    <option value="1">⭐ 1 - Poor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="content">Memory / Review</label>
+                <textarea name="content" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; background: var(--warning-color);">Save Memory</button>
+        </form>
+    </div>
+
+    <!-- Reviews List -->
+    <div>
+        <h3 style="margin-bottom: 1.5rem;">Trip Memories & Reviews</h3>
+        {% if trip.reviews %}
+            <div class="grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                {% for r in trip.reviews|sort(attribute='created_at', reverse=True) %}
+                    <div class="card" style="border-top: 4px solid var(--warning-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <h4 style="margin: 0; font-size: 1.2rem;">{{ r.title }}</h4>
+                            <div style="color: var(--warning-color); font-size: 1.2rem;">
+                                {% for i in range(r.rating) %}★{% endfor %}{% for i in range(5 - r.rating) %}☆{% endfor %}
+                            </div>
+                        </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+                            "{{ r.content }}"
+                        </p>
+                        <div style="font-size: 0.8rem; color: #94a3b8; text-align: right;">
+                            {{ r.created_at.strftime('%b %d, %Y') }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <p style="color: var(--text-secondary); margin: 0;">No reviews or memories added yet. Start journaling your trip!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

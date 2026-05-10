@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+        <div>
+            <h1 class="page-title">{{ trip.name }}</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">
+                {{ trip.start_date.strftime('%b %d, %Y') }} - {{ trip.end_date.strftime('%b %d, %Y') }}
+            </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="{{ url_for('itinerary_builder', trip_id=trip.id) }}" class="btn btn-secondary">Edit Route</a>
+            <a href="{{ url_for('shared_itinerary', trip_id=trip.id) }}" class="btn btn-secondary">Share</a>
+        </div>
+    </div>
+    
+    <!-- Trip Sub-navigation -->
+    <div class="trip-subnav">
+        <a href="{{ url_for('itinerary_view', trip_id=trip.id) }}" class="active">Itinerary</a>
+        <a href="{{ url_for('bookings', trip_id=trip.id) }}">Bookings</a>
+        <a href="{{ url_for('funds', trip_id=trip.id) }}">Funds</a>
+        <a href="{{ url_for('budget', trip_id=trip.id) }}">Budget</a>
+        <a href="{{ url_for('checklist', trip_id=trip.id) }}">Checklist</a>
+        <a href="{{ url_for('reviews', trip_id=trip.id) }}">Reviews</a>
+        <a href="{{ url_for('notes', trip_id=trip.id) }}">Notes</a>
+    </div>
+</div>
+
+{% if trip.stops %}
+    <div style="max-width: 800px; margin: 0 auto;">
+        {% for stop in trip.stops|sort(attribute='start_date') %}
+            <div style="margin-bottom: 4rem; position: relative;">
+                <!-- Timeline visual -->
+                <div style="position: absolute; left: 15px; top: 80px; bottom: -40px; width: 2px; background: #e2e8f0; z-index: 0;"></div>
+                
+                <div class="destination-bg" style="background-image: url('https://loremflickr.com/1200/400/{{ stop.city|urlencode }},city,architecture,travel');">
+                    <div class="destination-content">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                                {{ loop.index }}
+                            </div>
+                            <h2 style="margin: 0; font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">{{ stop.city }}</h2>
+                        </div>
+                        <p style="font-size: 1.1rem; margin: 0; margin-left: 3rem; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+                            {{ stop.start_date.strftime('%b %d') }} - {{ stop.end_date.strftime('%b %d') }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="padding-left: 3rem;">
+                    {% if stop.activities %}
+                        <div class="grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                            {% for act in stop.activities %}
+                                <div class="card" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <h4 style="margin-bottom: 0.25rem;">{{ act.name }}</h4>
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                                            <span style="display: inline-block; padding: 2px 8px; background: #f1f5f9; border-radius: 12px; margin-right: 8px;">{{ act.type }}</span>
+                                            {{ act.duration }} mins • {{ act.description or 'No description' }}
+                                        </p>
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-primary);">
+                                        ${{ "%.2f"|format(act.cost) }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="card" style="padding: 1.5rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; box-shadow: none;">
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">No activities planned yet.</p>
+                            <a href="{{ url_for('activity_search', trip_id=trip.id, stop_id=stop.id) }}" class="btn btn-secondary" style="font-size: 0.85rem;">Browse Activities</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
+        <h2 style="margin-bottom: 1rem;">Your itinerary is empty</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Start building your trip by adding your first destination.</p>
+        <a href="{{ url_for('itinerary_builder', trip_id=trip.id) }}" class="btn btn-primary">Add Route Stops</a>
+    </div>
+{% endif %}
+{% endblock %}
